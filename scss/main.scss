@@ -1,0 +1,76 @@
+// imports
+@import './resets';
+@import './variables';
+
+// function and mixins are similar - but functions should be used to calculate an return value,
+// mixins should be used for defininig styles
+
+// functions
+@function weight($weight-name) {
+  @return map-get($font-weights, $weight-name)
+};
+
+// mixins
+@mixin flexCenter($direction: row) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: $direction;
+};
+// confitional mixin
+@mixin theme($light-theme: true) {
+  @if $light-theme {
+    background: lighten($primary-color, 100%);
+    color: darken($text-color, 100%);
+  }
+};
+
+// content including mixin
+@mixin mobile {
+  @media(max-width: $mobile) {
+    @content;
+  }
+};
+
+
+body {
+  background-color: $primary-color;
+  color: $text-color;
+  font-weight: map-get($font-weights, bold);
+}
+
+// nesting
+.main {
+  @include flexCenter();
+
+  // calculations done right in value:
+  // in here we can't mix types, but in css - it's possible with calc(80% - 400px) function
+  width: 80% - 40%;
+  margin: 0 auto;
+
+  // interpolation - it's also used in cases where we interpolating variables like:
+  // background-#{$smth}: $color; 
+  #{&}__paragraph1 {
+      font-weight: weight(regular);
+
+      &:hover {
+        color: pink;
+      }
+  }
+
+  #{&}__paragraph2 {
+    @extend .main__paragraph1;
+
+    &:hover {
+      color: $accent-color
+    }
+  };
+
+  @include mobile {
+    flex-direction: column;
+  };
+}
+
+.light {
+  @include theme($light-theme: false);
+}
